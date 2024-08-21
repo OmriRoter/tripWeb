@@ -105,3 +105,41 @@ button:hover {
 .card-body p {
   margin: 0.5em 0 0;
 }
+
+/* New styles for TripInfo component */
+.trip-info-container {
+  padding: 20px;
+}
+
+.map-photo-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.map-container, .photo-container {
+  width: 48%;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#loading-img {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.photo img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

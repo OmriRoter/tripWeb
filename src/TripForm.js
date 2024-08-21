@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import countryList from './countries.json';
 
 function TripForm({ onRouteInfo }) {
   const [country, setCountry] = useState('');
   const [tripType, setTripType] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     console.log(`Submitting request for country: ${country}, tripType: ${tripType}`);
     try {
       const response = await fetch('http://localhost:3001/api/getRoute', {
@@ -18,12 +22,15 @@ function TripForm({ onRouteInfo }) {
       });
       const data = await response.json();
       console.log('Data received from server:', data);
-      if (data.routes) {
+      if (data.routes && data.routes.length > 0) {
         onRouteInfo(data);
+        navigate('/trip-info', { state: { routes: data.routes } });
       } else {
+        setError('No routes found. Please try again.');
         console.error('No routes found in the response:', data);
       }
     } catch (error) {
+      setError('Error fetching route data. Please try again.');
       console.error('Error fetching route data:', error);
     }
   };
@@ -56,6 +63,7 @@ function TripForm({ onRouteInfo }) {
         <option value="bicycle">Bicycle</option>
       </select>
       <button type="submit">Create Itinerary</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 }
