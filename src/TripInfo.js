@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Tooltip, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap } from "react-leaflet";
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
@@ -10,10 +10,19 @@ const stablePhotoGenerateURL = "https://stablehorde.net/api/v2/generate/status/"
 
 const myIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-  iconSize: [32, 32],
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+function ChangeView({ bounds }) {
+  const map = useMap();
+  map.fitBounds(bounds);
+  return null;
+}
 
 function TripInfo() {
   const location = useLocation();
@@ -39,7 +48,7 @@ function TripInfo() {
       setPhotoUrls(urls.filter(url => url !== null));
     } catch (error) {
       console.error("Error fetching photo URLs:", error);
-      setError("Failed to load images. Please try again later.");
+      setError("Failed to load some images. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -138,6 +147,7 @@ function TripInfo() {
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          <ChangeView bounds={bounds} />
           {routes.map((route, index) => (
             <React.Fragment key={index}>
               <Marker position={[route.start.lat, route.start.lng]} icon={myIcon}>
@@ -146,7 +156,10 @@ function TripInfo() {
               <Marker position={[route.end.lat, route.end.lng]} icon={myIcon}>
                 <Tooltip permanent>Day {index + 1} End</Tooltip>
               </Marker>
-              <Polyline positions={[[route.start.lat, route.start.lng], [route.end.lat, route.end.lng]]} />
+              <Polyline positions={[
+                [route.start.lat, route.start.lng],
+                [route.end.lat, route.end.lng]
+              ]} color="blue" />
             </React.Fragment>
           ))}
         </MapContainer>
@@ -164,28 +177,14 @@ function TripInfo() {
           <div className="photo-container">
             {loading ? (
               <div className="loading-container">
-                <svg width="50" height="50" viewBox="0 0 50 50">
-                  <circle cx="25" cy="25" r="20" fill="none" stroke="#000000" strokeWidth="5" strokeLinecap="round">
-                    <animateTransform
-                      attributeName="transform"
-                      type="rotate"
-                      dur="1s"
-                      from="0 25 25"
-                      to="360 25 25"
-                      repeatCount="indefinite"
-                    />
-                  </circle>
-                </svg>
-                <p>Loading...</p>
+                <p>Loading image...</p>
               </div>
-            ) : error ? (
-              <p className="error-message">{error}</p>
+            ) : photoUrls[index] ? (
+              <div className="photo">
+                <img src={photoUrls[index]} alt={`Day ${index + 1} Route`} />
+              </div>
             ) : (
-              photoUrls[index] && (
-                <div className="photo">
-                  <img src={photoUrls[index]} alt={`Day ${index + 1} Route`} />
-                </div>
-              )
+              <p>Failed to load image. Please try again later.</p>
             )}
           </div>
         </div>
