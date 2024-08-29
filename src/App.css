@@ -1,145 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --accent-color: #e74c3c;
+  --background-color: #ecf0f1;
+  --text-color: #333;
+  --light-text-color: #ecf0f1;
+  --form-bg-color: #2c3e50;
+  --input-bg-color: #34495e;
+}
+
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f0f0f0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header {
-  background-color: #4CAF50;
-  color: white;
+  background: linear-gradient(135deg, var(--primary-color), #2980b9);
+  color: var(--light-text-color);
   text-align: center;
-  padding: 1em 0;
+  padding: 2em 0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
   margin: 0;
-  font-size: 2.5em;
+  font-size: 2.8em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 main {
-  max-width: 900px;
+  flex-grow: 1;
+  max-width: 1200px;
   margin: 2em auto;
-  padding: 20px;
+  padding: 30px;
   background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
 }
 
-form {
+.trip-form {
   display: flex;
   flex-direction: column;
-  gap: 1em;
-  margin-bottom: 2em;
+  gap: 1.5em;
+  max-width: 600px;
+  margin: 0 auto 2em;
+  padding: 30px;
+  background: var(--form-bg-color);
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 label {
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--light-text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 input, select, button {
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+input, select {
+  background-color: var(--input-bg-color);
+  color: var(--light-text-color);
+}
+
+input::placeholder, select::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondary-color);
+}
+
+select option {
+  background-color: var(--input-bg-color);
+  color: var(--light-text-color);
 }
 
 button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
+  background-color: var(--accent-color);
+  color: var(--light-text-color);
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-#map {
-  height: 400px;
+button:active {
+  transform: translateY(0);
+}
+
+.map-container {
+  height: 500px;
   margin-top: 2em;
-  border-radius: 8px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .route-info {
   margin-top: 2em;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
-.route-info div {
-  background: #f9f9f9;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-left: 4px solid #4CAF50;
-  border-radius: 4px;
+.route-info h2 {
+  color: var(--primary-color);
+  border-bottom: 3px solid var(--secondary-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-weight: 700;
 }
 
 .route-info h3 {
-  margin-top: 0;
+  color: var(--secondary-color);
+  font-weight: 600;
 }
 
 .route-info p {
-  margin: 0.5em 0;
+  margin: 0.8em 0;
+  line-height: 1.8;
 }
 
-.card {
-  margin-bottom: 1em;
-  border: none;
+.route-info ul {
+  padding-left: 20px;
 }
 
-.card img {
-  border-radius: 8px 8px 0 0;
+.route-info li {
+  margin-bottom: 10px;
 }
 
-.card-body {
-  background-color: #f9f9f9;
-  border-radius: 0 0 8px 8px;
-  padding: 15px;
+.trip-image {
+  margin-top: 30px;
+  text-align: center;
 }
 
-.card-body h5 {
-  margin: 0;
+.trip-image img {
+  max-width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.card-body p {
-  margin: 0.5em 0 0;
+.trip-image img:hover {
+  transform: scale(1.02);
 }
 
-/* New styles for TripInfo component */
-.trip-info-container {
-  padding: 20px;
+.error-message {
+  color: var(--accent-color);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 1em;
 }
 
-.map-photo-container {
+.trip-form .form-group label {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1em;
+  margin-bottom: 5px;
 }
 
-.map-container, .photo-container {
-  width: 48%;
+.trip-form .form-group label svg {
+  font-size: 1.2em;
 }
 
-.loading-container {
+.trip-form button {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  gap: 10px;
 }
 
-#loading-img {
-  animation: spin 2s linear infinite;
+.trip-form button svg {
+  font-size: 1.2em;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.photo img {
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
-  border-radius: 8px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  color: white;
+  font-size: 3em;
+}
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2.2em;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .trip-form {
+    padding: 20px;
+  }
+
+  .map-container {
+    height: 300px;
+  }
 }
