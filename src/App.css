@@ -1,250 +1,286 @@
+/* Import the Montserrat font from Google Fonts with various weights */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
 
+/* Define CSS variables for consistent styling throughout the application */
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2ecc71;
-  --accent-color: #e74c3c;
-  --background-color: #ecf0f1;
-  --text-color: #333;
-  --light-text-color: #ecf0f1;
-  --form-bg-color: #2c3e50;
-  --input-bg-color: #34495e;
+  --primary-color: #3498db; /* Primary blue color */
+  --secondary-color: #2ecc71; /* Secondary green color */
+  --accent-color: #e74c3c; /* Accent red color */
+  --background-color: #ecf0f1; /* Light gray background color */
+  --text-color: #333; /* Dark gray text color */
+  --light-text-color: #ecf0f1; /* Light text color for contrast */
+  --form-bg-color: #2c3e50; /* Dark blue background for forms */
+  --input-bg-color: #34495e; /* Darker blue background for inputs */
 }
 
+/* Base styling for the body element */
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', sans-serif; /* Use Montserrat font */
   margin: 0;
   padding: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--background-color); /* Set background color */
+  color: var(--text-color); /* Set text color */
 }
 
+/* Styling for the main app container */
 .App {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; /* Ensure the app takes up the full viewport height */
 }
 
+/* Header styling with a gradient background and shadow */
 header {
   background: linear-gradient(135deg, var(--primary-color), #2980b9);
-  color: var(--light-text-color);
+  color: var(--light-text-color); /* Light text color for contrast */
   text-align: center;
   padding: 2em 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
+/* Styling for the main header title */
 header h1 {
   margin: 0;
-  font-size: 2.8em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 2.8em; /* Large font size */
+  font-weight: 700; /* Bold font weight */
+  text-transform: uppercase; /* Uppercase text */
+  letter-spacing: 2px; /* Increase spacing between letters */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow for emphasis */
 }
 
+/* Main content area styling */
 main {
-  flex-grow: 1;
-  max-width: 1200px;
-  margin: 2em auto;
+  flex-grow: 1; /* Allow main to grow to fill available space */
+  max-width: 1200px; /* Limit maximum width for better readability */
+  margin: 2em auto; /* Center content with margin */
   padding: 30px;
-  background: white;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  border-radius: 15px;
+  background: white; /* White background for contrast */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Larger shadow for depth */
+  border-radius: 15px; /* Rounded corners */
 }
 
+/* Styling for the trip form section */
 .trip-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5em;
-  max-width: 600px;
-  margin: 0 auto 2em;
+  gap: 1.5em; /* Space between form elements */
+  max-width: 600px; /* Limit width for better UX */
+  margin: 0 auto 2em; /* Center form and add bottom margin */
   padding: 30px;
-  background: var(--form-bg-color);
-  border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  background: var(--form-bg-color); /* Dark background for form */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
+/* Grouping form elements with consistent spacing */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 0.5em; /* Space between label and input */
 }
 
+/* Label styling with bold text and light color */
 label {
   font-weight: 600;
-  color: var(--light-text-color);
+  color: var(--light-text-color); /* Light text color */
   display: flex;
-  align-items: center;
-  gap: 0.5em;
+  align-items: center; /* Center vertically */
+  gap: 0.5em; /* Space between label and icon (if any) */
 }
 
+/* Styling for input, select, and button elements */
 input, select, button {
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 12px; /* Padding inside elements */
+  font-size: 16px; /* Set font size */
+  border: none; /* Remove default borders */
+  border-radius: 8px; /* Rounded corners */
+  transition: all 0.3s ease; /* Smooth transition on interaction */
 }
 
+/* Specific styling for input and select elements */
 input, select {
-  background-color: var(--input-bg-color);
-  color: var(--light-text-color);
+  background-color: var(--input-bg-color); /* Dark background for inputs */
+  color: var(--light-text-color); /* Light text color */
 }
 
+/* Placeholder text styling */
 input::placeholder, select::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5); /* Semi-transparent placeholder text */
 }
 
+/* Focus state styling for inputs and selects */
 input:focus, select:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--secondary-color);
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 0 2px var(--secondary-color); /* Add custom focus outline */
 }
 
+/* Styling for select options */
 select option {
-  background-color: var(--input-bg-color);
-  color: var(--light-text-color);
+  background-color: var(--input-bg-color); /* Dark background for options */
+  color: var(--light-text-color); /* Light text color */
 }
 
+/* Button styling with background color and uppercase text */
 button {
-  background-color: var(--accent-color);
-  color: var(--light-text-color);
+  background-color: var(--accent-color); /* Red background for buttons */
+  color: var(--light-text-color); /* Light text color */
   cursor: pointer;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
+  font-weight: 600; /* Bold text */
+  text-transform: uppercase; /* Uppercase text */
+  letter-spacing: 1px; /* Slightly increase letter spacing */
+  transition: all 0.3s ease; /* Smooth transition on hover/active */
 }
 
+/* Hover state for buttons */
 button:hover {
-  background-color: #c0392b;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background-color: #c0392b; /* Darker red on hover */
+  transform: translateY(-2px); /* Slightly raise button */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Add shadow for emphasis */
 }
 
+/* Active state for buttons */
 button:active {
-  transform: translateY(0);
+  transform: translateY(0); /* Reset transform */
 }
 
+/* Container for the map with fixed height and shadow */
 .map-container {
   height: 500px;
-  margin-top: 2em;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 2em; /* Space above the map */
+  border-radius: 15px; /* Rounded corners */
+  overflow: hidden; /* Hide overflow content */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
 
+/* Styling for route information section */
 .route-info {
-  margin-top: 2em;
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 2em; /* Space above the route info */
+  background: white; /* White background */
+  padding: 30px; /* Padding inside the container */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
 
+/* Styling for route information headers */
 .route-info h2 {
-  color: var(--primary-color);
-  border-bottom: 3px solid var(--secondary-color);
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-  font-weight: 700;
+  color: var(--primary-color); /* Primary color for headers */
+  border-bottom: 3px solid var(--secondary-color); /* Underline header */
+  padding-bottom: 10px; /* Padding below the header */
+  margin-bottom: 20px; /* Space below the header */
+  font-weight: 700; /* Bold font */
 }
 
+/* Sub-header styling within route information */
 .route-info h3 {
-  color: var(--secondary-color);
-  font-weight: 600;
+  color: var(--secondary-color); /* Secondary color for sub-headers */
+  font-weight: 600; /* Semi-bold font */
 }
 
+/* Paragraph styling within route information */
 .route-info p {
-  margin: 0.8em 0;
-  line-height: 1.8;
+  margin: 0.8em 0; /* Vertical margin */
+  line-height: 1.8; /* Increase line height for readability */
 }
 
+/* List styling within route information */
 .route-info ul {
-  padding-left: 20px;
+  padding-left: 20px; /* Indent list items */
 }
 
+/* List item styling within route information */
 .route-info li {
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Space between list items */
 }
 
+/* Container for images with centered alignment */
 .trip-image {
-  margin-top: 30px;
-  text-align: center;
+  margin-top: 30px; /* Space above the image */
+  text-align: center; /* Center align the image */
 }
 
+/* Styling for images with rounded corners and shadow */
 .trip-image img {
-  max-width: 100%;
-  border-radius: 15px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  max-width: 100%; /* Ensure image fits container */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+  transition: transform 0.3s ease; /* Smooth transform on hover */
 }
 
+/* Hover effect for images */
 .trip-image img:hover {
-  transform: scale(1.02);
+  transform: scale(1.02); /* Slightly enlarge image on hover */
 }
 
+/* Error message styling with accent color */
 .error-message {
-  color: var(--accent-color);
-  font-weight: 600;
-  text-align: center;
-  margin-top: 1em;
+  color: var(--accent-color); /* Red color for errors */
+  font-weight: 600; /* Bold text */
+  text-align: center; /* Center align the message */
+  margin-top: 1em; /* Space above the message */
 }
 
+/* Additional styling for labels within form groups */
 .trip-form .form-group label {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1.1em;
-  margin-bottom: 5px;
+  gap: 10px; /* Space between label and icon (if any) */
+  font-size: 1.1em; /* Slightly larger font */
+  margin-bottom: 5px; /* Space below the label */
 }
 
+/* Styling for SVG icons within labels */
 .trip-form .form-group label svg {
-  font-size: 1.2em;
+  font-size: 1.2em; /* Larger icon size */
 }
 
+/* Additional button styling within the form */
 .trip-form button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 10px; /* Space between button text and icon */
 }
 
+/* Styling for SVG icons within buttons */
 .trip-form button svg {
-  font-size: 1.2em;
+  font-size: 1.2em; /* Larger icon size */
 }
 
+/* Overlay styling for loading state */
 .loading-overlay {
-  position: fixed;
+  position: fixed; /* Fix to viewport */
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  justify-content: center; /* Center content */
+  align-items: center; /* Center content */
+  z-index: 1000; /* High z-index to overlay everything */
 }
 
+/* Loading spinner styling */
 .loading-spinner {
-  color: white;
-  font-size: 3em;
+  color: white; /* White color for spinner */
+  font-size: 3em; /* Large font size */
 }
 
+/* Responsive styling for smaller screens */
 @media (max-width: 768px) {
   header h1 {
-    font-size: 2.2em;
+    font-size: 2.2em; /* Smaller font size */
   }
 
   main {
-    padding: 20px;
+    padding: 20px; /* Reduce padding */
   }
 
   .trip-form {
-    padding: 20px;
+    padding: 20px; /* Reduce padding */
   }
 
   .map-container {
-    height: 300px;
+    height: 300px; /* Reduce map height */
   }
 }
