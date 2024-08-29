@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 const { getGroqChatCompletion } = require('./groqService');
 const { generateImage } = require('./stableHordeService');
 
@@ -9,86 +10,140 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
+async function geocode(place, country) {
+  try {
+    const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+      params: {
+        q: `${place}, ${country}`,
+        format: 'json',
+        limit: 1,
+        addressdetails: 1
+      }
+    });
+    if (response.data && response.data.length > 0) {
+      return {
+        lat: parseFloat(response.data[0].lat),
+        lng: parseFloat(response.data[0].lon)
+      };
+    }
+    throw new Error('Location not found');
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    return null;
+  }
+}
+
+function extractLocations(text) {
+  const cityRegex = /\b([A-Z][a-z]+(?: [A-Z][a-z]+)*)\b/g;
+  return text.match(cityRegex) || [];
+}
+
+function extractTripDetails(day) {
+  const lines = day.split('\n').filter(line => line.trim() !== '');
+  const description = lines[0]?.trim() || '';
+  
+  const routeDetails = lines.find(line => line.toLowerCase().includes('km') || line.toLowerCase().includes('miles'));
+  let length = routeDetails ? parseInt(routeDetails.match(/\d+/)[0]) : 0;
+  
+  const durationDetails = lines.find(line => line.toLowerCase().includes('duration'));
+  const duration = durationDetails ? durationDetails.split(':')[1]?.trim() : null;
+
+  const pointsOfInterest = lines
+    .filter(line => !line.startsWith(description) && !line.startsWith(routeDetails) && !line.startsWith(durationDetails))
+    .map(line => line.trim());
+
+  return { description, pointsOfInterest, length, duration };
+}
+
+async function parseRoutes(chatCompletion, country, tripType) {
+  const days = chatCompletion.split(/Day \d+:/).slice(1);
+  let routes = [];
+  let previousEndLocation = null;
+
+  for (let i = 0; i < days.length; i++) {
+    const day = days[i];
+    const { description, pointsOfInterest, length, duration } = extractTripDetails(day);
+    
+    const adjustedLength = tripType === 'bicycle' 
+      ? Math.min(length, 80)
+      : Math.max(80, Math.min(length, 300));
+
+    const locations = extractLocations(description);
+    let startLocation = previousEndLocation || locations[0] || country;  
+    let endLocation = locations[locations.length - 1] || country;
+
+    if (startLocation === endLocation && locations.length > 1) {
+      endLocation = locations[1];
+    }
+
+    let startCoords = await geocode(startLocation, country);
+    let endCoords = await geocode(endLocation, country);  
+
+    if (!startCoords) startCoords = { lat: 0, lng: 0 };
+    if (!endCoords) endCoords = { lat: 0, lng: 0 };
+
+    const routeEntry = {
+      name: `${country} - Day ${i + 1} Route`,
+      full_description: `Day ${i + 1} of the journey in ${country}`, 
+      start: startCoords,
+      end: endCoords,
+      length: adjustedLength,
+      duration,
+      pointsOfInterest,
+      position: startCoords ? [startCoords.lat, startCoords.lng] : [0, 0],
+      description
+    };
+
+    routes.push(routeEntry);
+
+    previousEndLocation = endLocation;
+  }
+
+  return routes;
+}
+
 app.post('/api/getRoute', async (req, res) => {
   const { country, tripType } = req.body;
 
   console.log(`Received request for country: ${country}, tripType: ${tripType}`);
 
   try {
-    const response = await getGroqChatCompletion(country, tripType);
+    const prompt = `Create a continuous 3-day travel itinerary for ${country} by ${tripType}. The itinerary must be exactly 3 days, no more and no less. 
+    Ensure that each day's end location is the start location for the next day.
+    For bicycle trips, each day's route should not exceed 80 km.
+    For car trips, each day's route should be between 80 km and 300 km.
+    Include specific city names, points of interest, total distance, and estimated trip duration for each day.
+    Format the response with 'Day 1:', 'Day 2:', and 'Day 3:' headings. 
+    Start each day's description with the route, e.g., "From [Start City] to [End City]".
+    On a new line after the route, include the text "Total Distance: X km" where X is the total distance in km for that day's route.
+    On another new line, include the text "Estimated Duration: Y" where Y is the estimated trip duration for that day's route.
+    After the duration, list 3-4 points of interest. Do not use any special characters, numbers or bullet points. Just put each point of interest on its own line.`;
+
+    const response = await getGroqChatCompletion(prompt);
     const chatCompletion = response.choices[0]?.message?.content || "";
 
     console.log('Chat completion:', chatCompletion);
 
-    const routes = parseRoutes(chatCompletion, country);
+    const routes = await parseRoutes(chatCompletion, country, tripType);
 
     console.log('Routes received:', routes);
 
-    // Generate image for the first route
-    let imageUrl;
-    try {
-      imageUrl = await generateImage(routes[0].description);
-    } catch (imageError) {
-      console.error('Error generating image:', imageError);
-      imageUrl = null;  // Set to null if image generation fails
-    }
+    // Generate images for each route
+    const imageUrls = await Promise.all(routes.map(async (route) => {
+      try {
+        return await generateImage(`${country} ${route.description}`);
+      } catch (imageError) {
+        console.error('Error generating image:', imageError);
+        return null;
+      }
+    }));
 
-    res.json({ routes, imageUrl });
+    res.json({ routes, imageUrls });
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Error fetching data', details: error.message });
   }
 });
-
-function parseRoutes(chatCompletion, country) {
-  // This is a placeholder. You should implement proper parsing based on the chat completion
-  const routes = [
-    {
-      name: `${country} - Day 1 Route`,
-      full_description: `First day of the journey in ${country}`,
-      start: { lat: 51.505, lng: -0.09 },
-      end: { lat: 51.51, lng: -0.1 },
-      length: 80,
-      pointsOfInterest: [
-        'Visit the main city square',
-        'Explore local markets',
-        'Try traditional cuisine at a local restaurant'
-      ],
-      position: [51.505, -0.09],
-      description: `Start your journey in ${country}'s capital city. Explore the vibrant city center, visit historical landmarks, and immerse yourself in the local culture.`
-    },
-    {
-      name: `${country} - Day 2 Route`,
-      full_description: `Second day of the journey in ${country}`,
-      start: { lat: 51.51, lng: -0.1 },
-      end: { lat: 51.52, lng: -0.11 },
-      length: 75,
-      pointsOfInterest: [
-        'Visit a famous museum or art gallery',
-        'Relax in a scenic park',
-        'Attend a cultural event or performance'
-      ],
-      position: [51.51, -0.1],
-      description: `Continue your exploration of ${country}. Today's route takes you through cultural hotspots and natural beauty spots.`
-    },
-    {
-      name: `${country} - Day 3 Route`,
-      full_description: `Third day of the journey in ${country}`,
-      start: { lat: 51.52, lng: -0.11 },
-      end: { lat: 51.53, lng: -0.12 },
-      length: 70,
-      pointsOfInterest: [
-        'Take a day trip to a nearby attraction',
-        'Experience local entertainment',
-        'Shop for souvenirs and local crafts'
-      ],
-      position: [51.52, -0.11],
-      description: `Conclude your trip in ${country} with a mix of adventure and relaxation. This route offers a perfect blend of natural wonders and urban experiences.`
-    }
-  ];
-
-  return routes;
-}
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

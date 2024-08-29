@@ -24,7 +24,7 @@ function TripForm({ onRouteInfo }) {
       console.log('Data received from server:', data);
       if (data.routes && data.routes.length > 0) {
         onRouteInfo(data);
-        navigate('/trip-info', { state: { routes: data.routes } });
+        navigate('/trip-info', { state: { routes: data.routes, imageUrls: data.imageUrls } });
       } else {
         setError('No routes found. Please try again.');
         console.error('No routes found in the response:', data);

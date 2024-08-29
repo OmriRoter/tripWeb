@@ -1,90 +1,75 @@
-const generatePhoto = async (prompt) => {
-  const maxRetries = 3;
-  let retryCount = 0;
+const axios = require('axios');
 
-  while (retryCount < maxRetries) {
+const apiKey = "JfpazSBYdwnojXfdSMeWVg";
+const stableHordeUrl = "https://stablehorde.net/api/v2/generate/async";
+const stablePhotoGenerateURL = "https://stablehorde.net/api/v2/generate/status/";
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const generateImage = async (prompt) => {
+  const maxRetries = 3;
+  let retries = 0;
+
+  while (retries < maxRetries) {
     try {
-      // Step 1: Initiate the image generation
-      const response = await fetch(stableHordeUrl, {
-        method: "POST",
+      const response = await axios.post(stableHordeUrl, {
+        prompt: prompt,
+        params: {
+          samples: 1,
+          steps: 30,
+        }
+      }, {
         headers: {
-          "Content-Type": "application/json",
-          "apikey": apiKey,
-        },
-        body: JSON.stringify({ 
-          prompt: prompt,
-          params: {
-            samples: 1,
-            steps: 30,
-          },
-        }),
+          'Content-Type': 'application/json',
+          'apikey': apiKey,
+        }
       });
 
-      if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') || '60');
-        console.log(`Rate limited. Waiting for ${retryAfter} seconds before retry.`);
-        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-        retryCount++;
-        continue;
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.id) {
-        // Step 2: Wait for the image to be generated
-        const imageUrl = await checkPhotoStatus(data.id);
-        if (imageUrl) {
-          return imageUrl;
-        }
+      if (response.data && response.data.id) {
+        return await checkPhotoStatus(response.data.id);
       } else {
-        console.error("No id in response:", data);
+        console.error("No id in response:", response.data);
       }
     } catch (error) {
-      console.error("Error generating photo:", error);
-    }
-    
-    retryCount++;
-    if (retryCount < maxRetries) {
-      await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds before retry
+      if (error.response && error.response.status === 429) {
+        const retryAfter = parseInt(error.response.headers['retry-after'] || '1');
+        console.log(`Rate limited. Waiting for ${retryAfter} seconds before retry.`);
+        await delay(retryAfter * 1000);
+        retries++;
+      } else {
+        console.error("Error generating photo:", error.message);
+        return null;
+      }
     }
   }
 
-  return null; // Return null if all retries fail
+  console.error("Max retries reached for image generation");
+  return null;
 };
 
 const checkPhotoStatus = async (id) => {
-  const maxAttempts = 30; // Maximum number of attempts
-  const delayBetweenAttempts = 2000; // 2 seconds
+  const maxAttempts = 30;
+  const delayBetweenAttempts = 2000;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
-      const response = await fetch(`${stablePhotoGenerateURL}${id}`);
+      const response = await axios.get(`${stablePhotoGenerateURL}${id}`);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.data.done && response.data.generations && response.data.generations.length > 0) {
+        return response.data.generations[0].img;
+      } else if (!response.data.processing && !response.data.done) {
+        console.log("Generation is not processing and not done, moving to next attempt");
       }
 
-      const data = await response.json();
-
-      if (data.done && data.generations && data.generations.length > 0) {
-        return data.generations[0].img; // Return the image URL
-      } else if (!data.processing && !data.done) {
-        throw new Error('Generation failed or was canceled');
-      }
-
-      // If not done, wait before trying again
-      await new Promise(resolve => setTimeout(resolve, delayBetweenAttempts));
+      await delay(delayBetweenAttempts);
     } catch (error) {
-      console.error("Error checking photo status:", error);
-      // For network errors, we might want to retry
-      if (error.message !== 'Generation failed or was canceled') {
-        await new Promise(resolve => setTimeout(resolve, delayBetweenAttempts));
+      console.error("Error checking photo status:", error.message);
+      if (error.response && error.response.status === 429) {
+        const retryAfter = parseInt(error.response.headers['retry-after'] || '1');
+        console.log(`Rate limited. Waiting for ${retryAfter} seconds before retry.`);
+        await delay(retryAfter * 1000);
       } else {
-        return null; // Exit early for canceled or failed generations
+        await delay(delayBetweenAttempts);
       }
     }
   }
@@ -92,3 +77,5 @@ const checkPhotoStatus = async (id) => {
   console.error("Max attempts reached, couldn't get the image");
   return null;
 };
+
+module.exports = { generateImage };

@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useLocation } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap } from "react-leaflet";
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
-
-const apiKey = "qccj98M9hoCYgTs6gnkRSw";
-const stableHordeUrl = "https://stablehorde.net/api/v2/generate/async";
-const stablePhotoGenerateURL = "https://stablehorde.net/api/v2/generate/status/";
 
 const myIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -16,8 +12,6 @@ const myIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 function ChangeView({ bounds }) {
   const map = useMap();
   map.fitBounds(bounds);
@@ -26,107 +20,7 @@ function ChangeView({ bounds }) {
 
 function TripInfo() {
   const location = useLocation();
-  const routes = location.state ? location.state.routes : [];
-  const [photoUrls, setPhotoUrls] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (routes.length > 0) {
-      fetchPhotoUrls();
-    }
-  }, [routes]);
-
-  const fetchPhotoUrls = async () => {
-    try {
-      const urls = [];
-      for (const route of routes) {
-        const url = await generatePhoto(route.name);
-        urls.push(url);
-        await delay(5000); // Wait 5 seconds between requests
-      }
-      setPhotoUrls(urls.filter(url => url !== null));
-    } catch (error) {
-      console.error("Error fetching photo URLs:", error);
-      setError("Failed to load some images. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generatePhoto = async (prompt) => {
-    const maxRetries = 3;
-    let retryCount = 0;
-
-    while (retryCount < maxRetries) {
-      try {
-        const response = await fetch(stableHordeUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apiKey: apiKey,
-          },
-          body: JSON.stringify({ prompt }),
-        });
-
-        if (response.status === 429) {
-          const retryAfter = response.headers.get('Retry-After') || 60;
-          console.log(`Rate limited. Waiting for ${retryAfter} seconds before retry.`);
-          await delay(retryAfter * 1000);
-          retryCount++;
-          continue;
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data.id) {
-          return await checkPhotoStatus(data.id);
-        } else {
-          console.error("No id in response:", data);
-          return null;
-        }
-      } catch (error) {
-        console.error("Error generating photo:", error);
-        retryCount++;
-        if (retryCount >= maxRetries) {
-          return null;
-        }
-        await delay(5000); // Wait 5 seconds before retry
-      }
-    }
-    return null;
-  };
-
-  const checkPhotoStatus = async (id) => {
-    let retries = 0;
-    const maxRetries = 10;
-    while (retries < maxRetries) {
-      try {
-        const response = await fetch(stablePhotoGenerateURL + id);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (data.generations && data.generations.length > 0 && data.generations[0].img) {
-          return data.generations[0].img;
-        } else {
-          await delay(5000); // Wait 5 seconds before checking again
-          retries++;
-        }
-      } catch (error) {
-        console.error("Error checking photo status:", error);
-        retries++;
-        if (retries >= maxRetries) {
-          return null;
-        }
-        await delay(5000);
-      }
-    }
-    return null;
-  };
+  const { routes, imageUrls } = location.state || { routes: [], imageUrls: [] };
 
   if (routes.length === 0) {
     return <div>No route information available.</div>;
@@ -167,26 +61,22 @@ function TripInfo() {
       {routes.map((route, index) => (
         <div key={index} className="route-info">
           <h2>{route.name}</h2>
-          <p>{route.description}</p>
+          <p><strong>Route:</strong> {route.description}</p>
+          <p><strong>Distance:</strong> {route.length} km</p>
+          <p><strong>Estimated Duration:</strong> {route.duration}</p>
           <h3>Points of Interest:</h3>
           <ul>
             {route.pointsOfInterest.map((poi, poiIndex) => (
               <li key={poiIndex}>{poi}</li>
             ))}
           </ul>
-          <div className="photo-container">
-            {loading ? (
-              <div className="loading-container">
-                <p>Loading image...</p>
-              </div>
-            ) : photoUrls[index] ? (
-              <div className="photo">
-                <img src={photoUrls[index]} alt={`Day ${index + 1} Route`} />
-              </div>
-            ) : (
-              <p>Failed to load image. Please try again later.</p>
-            )}
-          </div>
+          {imageUrls && imageUrls[index] ? (
+            <div className="trip-image">
+              <img src={imageUrls[index]} alt={`Trip Day ${index + 1}`} style={{ maxWidth: '100%', height: 'auto' }} />
+            </div>
+          ) : (
+            <div>Image not available</div>
+          )}
         </div>
       ))}
     </div>

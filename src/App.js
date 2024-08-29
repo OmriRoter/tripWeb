@@ -7,9 +7,11 @@ import './App.css';
 
 function App() {
   const [routeInfo, setRouteInfo] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState('');
 
-  const handleRouteInfo = (data) => {
+  const handleRouteInfo = (data, country) => {
     setRouteInfo(data);
+    setSelectedCountry(country);
   };
 
   return (
@@ -23,7 +25,7 @@ function App() {
             <Route path="/" element={
               <>
                 <TripForm onRouteInfo={handleRouteInfo} />
-                {routeInfo && <MapComponent routeInfo={routeInfo} />}
+                {routeInfo && <MapComponent routeInfo={routeInfo} country={selectedCountry} />}
               </>
             } />
             <Route path="/trip-info" element={<TripInfo />} />
