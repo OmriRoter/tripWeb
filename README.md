@@ -1,70 +1,96 @@
-# Getting Started with Create React App
+# 3 Daily Route Trips Around the World
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+This web application allows users to generate 3-day travel itineraries for various countries around the world. Users can choose between car and bicycle trips, and the application will create custom routes with points of interest and estimated travel times.
 
-## Available Scripts
+## Features
+- Country selection from a comprehensive list
+- Choice between car and bicycle trips
+- Generation of 3-day continuous travel itineraries
+- Display of route information including distances and durations
+- Interactive map showing the generated routes
+- AI-generated images representing each day of the trip
+- Responsive design for various screen sizes
 
-In the project directory, you can run:
+## Technologies Used
+- Frontend: React.js
+- Backend: Node.js with Express.js
+- Map Integration: Leaflet.js
+- AI Text Generation: Groq API
+- AI Image Generation: Stable Horde API
+- Styling: CSS with custom designs
 
-### `npm start`
+## Prerequisites
+Before you begin, ensure you have met the following requirements:
+- Node.js (v14.0.0 or later)
+- npm (v6.0.0 or later)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Installation
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/3-daily-route-trips.git
+   ```
 
-### `npm test`
+2. Navigate to the project directory:
+   ```
+   cd 3-daily-route-trips
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Install the dependencies for both frontend and backend:
+   ```
+   npm install
+   cd server
+   npm install
+   cd ..
+   ```
 
-### `npm run build`
+4. Create a `.env` file in the server directory and add your API keys:
+   ```
+   GROQ_API_KEY=your_groq_api_key
+   STABLEHORDE_API_KEY=your_stablehorde_api_key
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Running the Application
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Start the backend server:
+   ```
+   cd server
+   npm start
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. In a new terminal, start the React frontend:
+   ```
+   npm start
+   ```
 
-### `npm run eject`
+3. Open your browser and navigate to `http://localhost:3000`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Usage
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Select a country from the dropdown list.
+2. Choose between a car or bicycle trip.
+3. Click "Create Itinerary" to generate your 3-day trip plan.
+4. View the generated route on the map and scroll down to see detailed information for each day.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Contributing
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Contributions to this project are welcome. Please follow these steps:
 
-## Learn More
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-### Code Splitting
+## Acknowledgments
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Groq API for text generation
+- Stable Horde API for image generation
+- OpenStreetMap for mapping data
+- All contributors who have helped to enhance this project
